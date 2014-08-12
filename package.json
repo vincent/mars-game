@@ -1,0 +1,20 @@
+{
+  "name": "mars-game",
+  "version": "0.1.0",
+  "description": "A game about Mars",
+  "main": "index.js",
+  "dependencies": {
+    "recastjs": "*",
+    "three": "^0.68.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "mkdir -p web/js/build && browserify -d --noparse node_module/three-arena/node_modules/recastjs/lib/recast.js web/js/mars.js -o web/js/build/mars.build.js"
+  },
+  "keywords": [
+    "game",
+    "mars"
+  ],
+  "author": "Vincent Lark <vincent.lark@gmail.com>",
+  "license": "CC-BY-SA"
+}

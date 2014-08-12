@@ -1,0 +1,31 @@
+{
+    "install_dir": "./assets/",
+    "assets": [
+        {
+            "title": "File:Curiosity Approaching Mars, Artist's Concept.jpg",
+            "author": false,
+            "author_url": false,
+            "license": false,
+            "text": "This is an artist's concept of NASA's Mars Science Laboratory spacecraft approaching Mars.\n\nThe Curiosity rover is safely tucked inside the spacecraft's aeroshell. The mission's approach phase begins 45 minutes before the spacecraft enters the Martian atmosphere. It lasts until the spacecraft enters the atmosphere. For navigation purposes, the atmospheric entry point is (2,188 miles (3,522 kilometers) above the center of the planet. This illustration depicts a scene after the spacecraft's cruise stage has been jettisoned, which will occur 10 minutes before atmospheric entry. The Mars Science Laboratory spacecraft is being prepared for launch during Nov. 25 to Dec. 18, 2011. Landing on Mars is in early August 2012. In a prime mission lasting one Martian year (nearly two Earth years) researchers will use the rover's tools to study whether the landing region has had environmental conditions favorable for supporting microbial life and for preserving clues about whether life existed.\n\nNASA's Jet Propulsion Laboratory, a division of the California Institute of Technology, Pasadena, Calif., manages the Mars Science Laboratory Project for the NASA Science Mission Directorate, Washington.",
+            "tags": [],
+            "canonicalLink": "http://commons.wikimedia.org/wiki/File:Curiosity_Approaching_Mars,_Artist%27s_Concept.jpg",
+            "favicon": "//bits.wikimedia.org/favicon/commons.ico",
+            "lang": "en",
+            "image": null,
+            "videos": []
+        },
+        {
+            "title": "Space Skyboxes",
+            "author": "StumpyStrust",
+            "author_url": "/users/stumpystrust",
+            "license": false,
+            "text": "Here are a few skyboxes made with SpaceScape. Free for anything.",
+            "tags": [],
+            "canonicalLink": "http://opengameart.org/content/space-skyboxes-0",
+            "favicon": "http://opengameart.org/sites/all/themes/oga/opengameart2_favicon.ico",
+            "lang": null,
+            "image": null,
+            "videos": []
+        }
+    ]
+}

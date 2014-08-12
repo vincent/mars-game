@@ -1,0 +1,167 @@
+<html>
+
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
+
+        <script type="text/javascript" src="vendor/jquery/jquery.js"></script>
+        <!-- Games CSS -->
+        <link rel="stylesheet" href="/node_modules/threearena/examples/styles/animate.css">
+        <link rel="stylesheet" href="/node_modules/threearena/examples/styles/loadingbar.css">
+        <link rel="stylesheet" href="/node_modules/threearena/examples/styles/hud.mini.css">
+        <link rel="stylesheet" href="css/starwars.css">
+
+        <style type="text/css">
+        #stats { z-index: 1000; top: -50px !important; }
+        .navbar-fixed-top { z-index: 1; }
+        .dg.main  { position: absolute !important; left: 0 !important; right: auto !important; }
+        .dg .selector { width: 125px !important; }
+        #page { background-color: #F5F5F5; }
+        .col-md-4 { margin-bottom: 20px; }
+        #source { display: none; }
+        #myModal iframe { width: 100%; border: none; }
+        #deadscreen { display: none; width: 100%; height: 100%; background: url(styles/youaredead.jpg) no-repeat 0 0; background-size: contain; }
+        body {
+            background-size: cover;
+            background: url(/gamedata/backgrounds/Curiosity_Approaching_Mars.jpg) no-repeat 0 0;
+        }
+        #start {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+        }
+        #start:hover {
+            -webkit-box-shadow: 0 0 30px rgba(0, 0, 0, 0.6) inset;
+            -moz-box-shadow: 0 0 30px rgba(0, 0, 0, 0.6) inset;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6) inset;
+            transform: perspective(90px) rotateX(10deg) rotateZ(10deg);
+            cursor: pointer;
+        }
+        </style>
+    </head>
+
+    <body>
+
+        <!-- game elements -->
+        <div id="game-wrapper" style="display:none;">
+          <div id="game-container">
+            <div id="selection-rectangle"></div>
+            <div id="deadscreen"></div>
+
+            <div class="view menu" id="view-contextmenu" oncontextmenu="return false;">
+              <ul class="items" data-bind="foreach: items">
+                <li data-bind="attr: { class: action }, event: { click: $parent.click }">
+                  <span class="name" data-bind="text: name"></span>
+                  <span class="price" data-bind="text: price"></span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="view menu" id="view-dialogmenu" oncontextmenu="return false;">
+              <div class="text" data-bind="text: text"></div>
+              <ul class="choices" data-bind="foreach: choices">
+                <li data-bind="attr: { class: action }, event: { click: $parent.click }">
+                  <span class="choicetext" data-bind="text: text"></span>
+                </li>
+              </ul>
+            </div>
+
+            <div id="hud-container">
+
+              <div class="view front"></div>
+
+              <div class="view" id="view-character">
+                <div class="name" data-bind="text: name"></div>
+                <div class="level" data-bind="text: level"></div>
+                <div class="xp">
+                  <span class="bar" data-bind="text: xpprogress"></span>
+                </div>
+                <div class="image" data-bind="style:{ backgroundImage: 'url(' + image() + ')' }"></div>
+
+                <div class="strength" data-bind="text: strength"></div>
+                <div class="agility" data-bind="text: agility"></div>
+                <div class="intelligence" data-bind="text: intelligence"></div>
+
+                <div class="life">
+                  <div class="bar" data-bind="text: life(), style: { width: life() + '%' }"></div>
+                </div>
+                <div class="mana">
+                  <div class="bar" data-bind="text: mana(), style: { width: mana() + '%' }"></div>
+                </div>
+
+                <ul class="spells" data-bind="foreach: spells">
+                  <li class="spell">
+                    <div class="image" data-bind="event: { click: $parent.cast }, style: { backgroundImage: 'url(/gamedata/spells/' + name + '.png)' }">
+                    </div>
+                    <div class="cooldown" data-bind="text: ccd, style: { transform: 'skew(' + (90 / cooldown * ccd) + 'deg)' }"></div>
+                    <div class="level" data-bind="text: level">
+                  </li>
+                </ul>
+              </div>
+
+              <div class="view" id="view-map">
+                <div class="daylight"></div>
+                <div class="map" data-bind="event: { click: onMapClick, mousemove: onMapClick }, style: { backgroundImage: 'url(' + image() + ')' }">
+                  <ul data-bind="foreach: characters">
+                    <li class="character-position" data-bind="event: { hover: $root.onCharacterHover }, style: { top: z + '%', left: x + '%' }"></li>
+                  </ul>                    
+                </div>
+              </div>
+
+            </div>
+          </div>
+                         
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script type="text/javascript" src="vendor/threejs/build/three.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/libs/tween.min.js"></script>
+        <script type="text/javascript" src="vendor/dat.gui.js"></script>
+        <script type="text/javascript" src="vendor/shaderparticles/ShaderParticles.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/Sparks.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/MD2Character.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/MD2CharacterComplex.js"></script>
+        <script type="text/javascript" src="vendor/threejs/src/loaders/Loader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/src/loaders/JSONLoader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/loaders/OBJLoader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/loaders/MTLLoader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/loaders/OBJMTLLoader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/loaders/ColladaLoader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/controls/TrackballControls.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/controls/EditorControls.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/geometries/ConvexGeometry.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/shaders/BleachBypassShader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/shaders/ColorCorrectionShader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/shaders/CopyShader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/shaders/FXAAShader.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/postprocessing/EffectComposer.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/postprocessing/RenderPass.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/postprocessing/ShaderPass.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/js/postprocessing/MaskPass.js"></script>
+        <script type="text/javascript" src="vendor/threejs/examples/fonts/helvetiker_regular.typeface.js"></script>
+
+        <script type="text/javascript" src="vendor/m.guerrero/SkeletonHelper.js"></script>
+        <script type="text/javascript" src="vendor/m.guerrero/BlendCharacter.js"></script>
+
+        <script type="text/javascript" src="js/build/mars.build.js"></script>
+        <script type="text/javascript">
+        var game = new Mars({
+
+            player: {
+                position: {x:0, y:0, z:0}
+            },
+
+            map: 'start'
+
+        });
+        $('#game-wrapper').show();
+        </script>
+    </body>
+
+</html>
