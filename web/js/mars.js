@@ -4,6 +4,8 @@
 var Arena = require('threearena').Arena;
 // var Robot = require('./robot');
 
+var stemkoski = require('threearena/lib/particles/stemkoski_ParticleEngine');
+
 var Mars = function (options) {
 
   var self = this;
@@ -17,15 +19,20 @@ var Mars = function (options) {
 
     fogNear: 20,
     fogFar: 430,
-
-    lightAmbientColor: '#000',
+    
+    lightAmbientColor: '#525252',
     lightPointColor: '#363ec0',
     lightPointIntensity: 4,
     lightPointDistance: 210,
     lightPointAngle: 0.5,
+    lightPointOffset: {
+      x: -20,
+      y:  20,
+      z:  20
+    },
 
     lightDirectionalColor: '#d96839',
-    lightDirectionalIntensity: 3.5,
+    lightDirectionalIntensity: 4,
     lightDirectionalDistance: 1000,
 
     crowdMinDestinationChange: 0.05,
@@ -34,8 +41,8 @@ var Mars = function (options) {
 
   });
 
-  self.arena.setTerrain('/gamedata/maps/' + options.map + '.obj', {
-    minimap: '/gamedata/maps/simplest/minimap.png',
+  self.arena.setTerrain('/mars-gamedata/maps/' + options.map + '.obj', {
+    minimap: '/mars-gamedata/maps/simplest/minimap.png',
 
     cellSize: 0.3,          // nav mesh cell size (.8 > 2)
     cellHeight: 0.08,        // nav mesh cell height (.5 > 1)
@@ -87,7 +94,7 @@ var Mars = function (options) {
   /* */
   self.arena.addCharacter(function(done){
     var robot, loader = new THREE.JSONLoader();
-    loader.load('/gamedata/models/spidbot.js', function (geometry, materials) {
+    loader.load('/mars-gamedata/models/spidbot.js', function (geometry, materials) {
 
       function ensureLoop ( animation ) {
         for ( var i = 0; i < animation.hierarchy.length; i ++ ) {
@@ -152,6 +159,60 @@ var Mars = function (options) {
         );
       };
 
+      var placableObject2;
+      var loader = new THREE.JSONLoader();
+      loader.load('/mars-gamedata/models/biodome.js', function (object, materials) {
+        for (var i = 0; i < materials.length; i++) {
+          materials[i].shading = THREE.FlatShading;
+        }
+        placableObject2 = new THREE.Mesh(object, new THREE.MeshFaceMaterial(materials));
+        placableObject2.scale.set(10, 10, 10);
+
+        robot.learnSpell(Arena.Spells.PlaceObject, {
+          object:placableObject2,
+          maxRange: 50,
+          events: {
+            start: function (target) {
+              var aura = new stemkoski.ParticleEngine();
+              aura.setValues({
+                positionStyle  : stemkoski.Type.CUBE,
+                positionBase   : new THREE.Vector3( 0, 1, 0 ),
+                positionSpread : new THREE.Vector3( 1, 2, 1 ),
+
+                velocityStyle  : stemkoski.Type.CUBE,
+                velocityBase   : new THREE.Vector3( 0, 1, 0 ),
+                velocitySpread : new THREE.Vector3( 3, 2, 3 ), 
+
+                angleBase               : 10,
+                angleSpread             : 720,
+                angleVelocityBase       : 30,
+                angleVelocitySpread     : 2,
+                
+                particleTexture : THREE.ImageUtils.loadTexture( '/gamedata/textures/waterparticle.png' ),
+
+                sizeBase   : 5.0,
+                sizeSpread : 2.0,
+                opacityTween : new stemkoski.Tween([0.0, 1.0, 1.1, 2.0, 2.1, 3.0, 3.1, 4.0, 4.1, 5.0, 5.1, 6.0, 6.1],
+                                         [0.2, 0.2, 1.0, 1.0, 0.2, 0.2, 1.0, 1.0, 0.2, 0.2, 1.0, 1.0, 0.2] ),       
+                colorBase   : new THREE.Vector3(0.8, 0.8, 1), // H,S,L
+                colorSpread : new THREE.Vector3(0.1, 0.0, 0),
+
+                particlesPerSecond : 50,
+                particleDeathAge   : 6.1,   
+                emitterDeathAge    : Infinity
+              });
+              aura.initialize();
+              self.arena.scene.add(aura.particleMesh);
+              // aura.particleMesh.scale.set(0.1, 0.1, 0.1);
+              aura.particleMesh.position.copy(target.position);
+              self.arena.on('update', function(game){
+                aura.update(game.delta);
+              });
+            }
+          }
+        });  
+      });
+
       robot = new Arena.Characters.Dummy({
         object: character,
         radius: 1,
@@ -159,7 +220,6 @@ var Mars = function (options) {
         maxAcceleration: 5.0,
         onLoad: function(){
           // this.scale.set(0.2, 0.2, 0.2);
-          this.learnSpell(Arena.Spells.PlaceObject, { object:placableObject1 });
           self.arena.asPlayer(this);
           done(this);
         }
